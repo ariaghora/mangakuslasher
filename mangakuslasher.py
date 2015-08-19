@@ -17,9 +17,7 @@ def download_episode(eps_link, subdir='', download_all=False, counter=0):
 		for link in divs.findAll('img'):		
 			url_list.append(link.get('src'))
 
-	# Minus 1, last item isn't supposed to be downloaded.
-	# Dunno why exactly.
-	items_count = len(url_list) - 1 
+	items_count = len(url_list)
 	
 	print "Got " + str(items_count) + " item(s) to download"
 
@@ -29,7 +27,7 @@ def download_episode(eps_link, subdir='', download_all=False, counter=0):
 	else:
 		if not os.path.exists(subdir + str_episode):
 			os.makedirs(subdir + str_episode)
-		for i in range(0, len(url_list) - 1):
+		for i in range(0, len(url_list)):
 			try:
 				file_name = url_list[i].split('/')[-1]
 				print "Downloading item " + str(i + 1) + " of " + str(items_count) + " (" + str_episode + "/page" + str(counter) + os.path.splitext(urlparse.urlparse(file_name).path)[1] + ")"
