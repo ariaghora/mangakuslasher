@@ -5,9 +5,9 @@ import os
 import urllib2
 import urlparse
 
-def download_episode(eps_link):
+def download_episode(eps_link, subdir='', download_all=False, counter=0):
 	actual_link = eps_link.strip('/')
-	str_episode = actual_link.split('/')[-1]
+	str_episode = 'chapter ' + str(counter) if download_all else actual_link.split('/')[-1]
 	print ('Downloading chapter "' + str_episode + '"')
 
 	html_page   = urllib2.urlopen(actual_link)
@@ -27,14 +27,14 @@ def download_episode(eps_link):
 	if items_count <= 0:
 		print "No item to download"
 	else:
-		if not os.path.exists(str_episode):
-			os.makedirs(str_episode)
+		if not os.path.exists(subdir + str_episode):
+			os.makedirs(subdir + str_episode)
 		for i in range(0, len(url_list) - 1):
 			try:
 				file_name = url_list[i].split('/')[-1]
 				print "Downloading item " + str(i + 1) + " of " + str(items_count) + " (" + str_episode + "/page" + str(counter) + os.path.splitext(urlparse.urlparse(file_name).path)[1] + ")"
 				image_data = urllib2.urlopen(url_list[i])
-				out_file = open(str_episode + "/page" + str(counter) + os.path.splitext(urlparse.urlparse(file_name).path)[1], 'wb')
+				out_file = open(subdir + str_episode + "/page" + str(counter) + os.path.splitext(urlparse.urlparse(file_name).path)[1], 'wb')
 				out_file.write(image_data.read())
 				out_file.close()			
 				counter += 1
@@ -56,10 +56,13 @@ def download_all_episodes(manga_link):
 	# sort episodes ascending
 	url_list.reverse()
 
+	dir_name = urlparse.urlparse(manga_link).path.replace('/', '')
+
+	chap_counter = 1
 	# begin download
-	for url in url_list:
-		download_episode(url)
-		# print url
+	for url in url_list:		
+		download_episode(url, dir_name + '/', True, chap_counter)
+		chap_counter += 1
 
 argument_parser = argparse.ArgumentParser(description = "Download either all chapters or a single chapter of a manga from mangaku.web.id.")
 argument_parser.add_argument('-a', '--all', type=str, help = 'Download all chapters from a specified link')
